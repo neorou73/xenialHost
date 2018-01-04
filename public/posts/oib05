@@ -1,0 +1,12 @@
+originally published on 8/24/13 at 8:27 PM EST
+
+ Using Web.py on Windows 2003 Server with Apache 2.2
+
+
+ I had been using this combination for about a month at work, and despite some performance issues, so far it's worked fairly well as a single user application. We can not run anything other than Windows VMs there, to my disappointment. In any case, thankfully there are at least versions of Python, Apache and related Python modules that will run on Windows.
+
+
+ The python application is set up as a standalone, which means that it utilizes the CherryPy server built into Web.py and is served through a separate port. I also installed it as a Windows service. To run the python script to run as a service, and I used ServiceInstaller for Windows NT. To my dismay, I discovered recently that this site had been taken down. I had discovered it from this StackOverflow discussion.
+
+
+ The setup ended up being simple in the end. It took a while to figure all of it out, because not all the documentation I found were super clear - partially because my understanding of the disparate technologies were insufficient - but also because they were not so well organized. For instance, to find examples of how to read and create lists or dictionaries from a Python config file using ConfigParser, one must really search the entire web. Thank you, StackOverflow!!!

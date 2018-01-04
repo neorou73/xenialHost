@@ -1,0 +1,33 @@
+originally published on on 4/27/11 at 9:45PM EST
+
+Getting this to work on Macvim requires some tweaks.
+
+
+set nocompatible
+set autoindent
+set smartindent
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set showmatch
+set vb t_vb=
+set ruler
+set nohls
+set incsearch
+set virtualedit=all
+set number
+set nobk
+set gfn=courier_new:h9
+set lines=50
+set columns=145
+
+set backspace=2 
+
+ 
+
+ syntax on
+
+ let $myvimdir = "/path/to/work/directory/4vim"
+
+
+

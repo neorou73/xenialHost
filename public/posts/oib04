@@ -1,0 +1,48 @@
+originally published on 9/6/13 at 12:53PM EST
+
+On a running linux server, I accomplish this using a CRON task, and a python script that simply checks if the application is running, then stops it. One can start up a web.py WSGI application by calling it from the command line. Following is the CRON tab that I have:
+
+
+0 * * * * /home/kris/cema/apps/stop.py
+1 * * * * /home/kris/cema/apps/main.py
+@reboot /home/kris/cema/apps/main.py
+
+
+I added the @reboot for occassions when the server needs to be manually rebooted.
+
+
+The main.py application has a RESTful interface, that can issue the PID of the application. This allows me to not have to start up the application while issueing the PID during startup. By accessing the PID, the stop.py script can simply issue a system command to kill that process.
+
+
+following is an excerpt from the stop.py:
+
+
+import os, sys 
+
+currentDir = os.path.dirname(os.path.realpath(__file__)) 
+
+pidFile = currentDir + '/pid' 
+
+try: 
+
+    # first, try to get rid of the file 
+
+        cmd = "rm " + pidFile os.system(cmd) 
+
+            # now, regenerate the file containing the new pid 
+
+                cmd = "wget http://localhost:8123/pid" 
+
+                    os.system(cmd) # read the pid and kill process represented by that PID 
+
+                        with open(pidFile, 'r') as content: 
+
+                                pid = content.read() 
+
+                                        com = "kill " + pid os.system(com) 
+
+                                                print "killed PID ", pid 
+
+                                                    except: 
+
+                                                            print 'ERROR: ', sys.exc_info()[0] 

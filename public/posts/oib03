@@ -1,0 +1,53 @@
+originally published on 9/7/13 at 9:15PM EST
+
+I have Virtualbox 4.2.18 running on Windows 7 Home Premium. The guest installer is Ubuntu-12.04.2-server-amd64.iso downloaded early February 2013.
+
+
+First, install the guest OS and update it as necessary. I set my updates to automated security only.
+
+Then, I installed Virtualbox Guest Additions, to allow shared folders.
+
+
+Create the shared folder in the guest OS preferences on the host side. Go to Shared Folders, and set it to auto-mount, and not to read-only. Give it a name you can recognize. As an example, I will name mine shared_with_vm.
+
+
+Boot into your guest system, and install build-essentials, to include gcc compiler and other software building requirements for Virtualbox Guest Additions.
+
+
+sudo apt-get install build-essentials
+
+
+Go to the VirtualBox host window, and under Devices, select Install Guest Additions. If you don't get an error warning, the CD ISO is inserted into the system. You will need to mount it onto the guest system now.
+
+
+$ sudo mount /dev/cdrom /media/cdrom
+
+ 
+
+ If you issue the above command, you should get something like the following:
+
+  
+
+  block device /dev/sr0 is write-protected, mounting read-only
+
+   
+
+   Change directory into /media/cdrom and run
+
+
+   sudo ./VBoxLinuxAdditions.run
+
+
+   The installer script should run, and run the installation with about 15 to 20 lines of status updates. You should not get any error warnings, except for maybe a failure to discover a valid X-Window component in the end. This is normal, since the server does not come with a  GUI - just the command-line. One thing you will need to do is add your user account to the vboxsf group - this will allow you to change into the shared folder directory after it is mounted later. 
+
+
+   sudo adduser username vboxsf
+
+
+   Now reboot your guest OS. After rebooting, go into the your shared directory. You should be able to change into this directory without getting any permissions errors, and see any pre-existing files if there are any. To test, do the following:
+
+
+   ls -la
+
+
+   This will list all the files and directories added to the shared_with_vm directory on the host system. Cheers...

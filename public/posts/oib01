@@ -1,0 +1,168 @@
+originally published on 2/2/16 10:11 PM EST
+
+This post will be a first in a series of posts about using Postgresql. At the time of this writing, version 9.5 became the current stable version, and my laptop was running Lubuntu version 14.04. Following is a simple account of the software package installation and creation of a simple table.
+
+
+Following instructions obtained from the Postgresql site, I added the repository that pertained to my version of L/Ubuntu and ran apt-get update. I installed version 9.5 by simply typing:
+
+
+sudo apt-get install postgresql-9.5 postgresql-doc-9.5
+
+
+Installation proceeded without a fuss. While I was at it, I also wanted to use python to talk directly with Postgresql, so I installed the psycopg2 package to allow Python to talk with Postgresql:
+
+
+sudo apt-get install python-psycopg2
+
+
+Now that postgres is installed, I can start using. By default, the local user login is not afforded a user account, and one would need to be created by using the built in administrator account. In postgres, that user account is called Postgres. To run Postgresql as the user postgres, invoke the sudo privilege and do the following:
+
+
+sudo -u postgres psql
+
+
+This will open Postgresql as the default admin user.
+
+
+Normally, the database should be configured according to how it will be used. Since there could be various different ways to configure the database, and this post will only explore installation and a simple table creation, the post on configuration will be deferred to a later posting.
+
+
+At the time of this writing, my laptop had the account with shortname 'kris' that I used to log in to the terminal. I wanted to pair this account with a user or a role in Postgresql. To do this, I would log in as the default Postgresql admin user and create the user account or role accordingly. Below is a depiction of instructions entered onto the screen and Postgresql's responses:
+
+
+kris@kppbpb650:~$ sudo -u postgres psql
+psql (9.5.0)
+Type "help" for help.
+
+postgres=# create user kris
+postgres-# ;
+CREATE ROLE
+
+
+The CREATE ROLE output confirms that the user or ROLE 'kris' was successfully created. I can now log in to Postgresql directly by typing 'psql' instead of 'sudo -u postgres psql'. Doing this however will not allow me to see anything or have any kind of privilege over any of Postgresql's resources. To change this, I would need to create a database and assign ownership and all the privileges to the user or role 'kris'. First I would create the database:
+
+
+postgres=# create database kris
+postgres-# ;
+CREATE DATABASE
+
+
+Next, I would grant all privileges on the newly created database to the user 'kris', and then assign ownership of this database to the same user:
+
+
+postgres=# grant all privileges on database kris to kris;
+GRANT
+postgres=# alter database kris owner to kris;
+ALTER DATABASE
+
+
+I can now exit the database application as user postgres by entering '\q', and log in again as user kris simply by typing:
+
+
+kris@kppbpb650:~$ psql
+psql (9.5.0)
+Type "help" for help.
+
+
+kris=#
+
+
+I would take this one step further though, and use the database 'kris' right at log in. To do this, I would type:
+
+
+kris@kppbpb650:~$ psql -d kris
+psql (9.5.0)
+Type "help" for help.
+
+
+kris=#
+
+
+I am now ready to create a table.
+
+
+For this example, I wanted to create a database that manages my assets for my family. So, I will illustrate a simple asset type table, which shows how to create a simple table that has an incremental ID or identifer, a field indicating the name of the asset type and when the asset type was recorded.
+
+
+The three attributes use 3 different data types, and they are as follows:
+
+
+id: one-up integer
+
+name: varying characters with yet unspecified length
+
+ts: a timestamp indicating the current date and time
+
+
+Postgresql uses sequences to create a one up incrementer for this purpose. The data type itself is just an integer, but the sequence table keeps track of what the next number ought to be, and abstracts away the complexity of how ID increments are done in Postgresql. A separate data type constitutes this method, and it is called SERIAL. We will specify the id attribute as using this data type.
+
+
+Since I did not know how much text will be used to specify the asset type name, I wanted to not use a TEXT data type as it would use up more space than is necessary. At the same time, I wanted to allow enough text space to specify a description. I specifed 50 as a length of characters necessary to make this grow.
+
+
+I also did not want the name field to have the same value, as it will be my primary key to call on unique values. I will specify this attribute as being the primary key.
+
+
+Finally, I wanted the ts field to record the timestamp automatically. In addition, I also wanted to record the time with respect to the current timezone of the server. Thus, I opted to use the timestamp with time zone data type. I also wanted the date and time to record automatically. This is a matter of defaulting the value to the current timestamp.
+
+
+To reflect the above, I issued the following:
+
+
+kris=# create table assettype (
+kris(# id SERIAL,
+kris(# name character varying(50),
+kris(# ts timestamp with time zone default CURRENT_TIMESTAMP,
+kris(# primary key(name));
+CREATE TABLE
+
+
+I can look at the database table structure by issuing the '\dS ' command:
+
+
+kris=# \dS assettype
+
+                                  Table "public.assettype"
+
+                                   Column |           Type           |                       Modifiers                       
+
+                                   --------+--------------------------+--------------------------------------------------------
+
+                                    id     | integer                  | not null default nextval('assettype_id_seq'::regclass)
+
+                                     name   | character varying(50)    | not null
+
+                                      ts     | timestamp with time zone | default now()
+
+                                      Indexes:
+
+                                          "assettype_pkey" PRIMARY KEY, btree (name)
+
+
+
+                                          Now that I have my table, I can start entering data into it. Since the id is auto incremented, and the ts (timestamp) field records the time automatically, I can specify only the assettype name attribute value for each row. The following example shows how I entered those values in a single query, and then used a slightly different query to get the values in the table:
+
+
+                                          kris=# insert into assettype (name) values ('car'),('utility'),('computer');
+
+                                          INSERT 0 3
+
+                                          kris=# select * from assettype;
+
+                                           id |   name   |              ts              
+
+                                           ----+----------+-------------------------------
+
+                                             1 | car      | 2016-02-02 21:56:29.356729-05
+
+                                               2 | utility  | 2016-02-02 21:56:29.356729-05
+
+                                                 3 | computer | 2016-02-02 21:56:29.356729-05
+
+                                                 (3 rows)
+
+
+                                                 I now have a database engine installed and a table with a set of data stored in it. This is a simple example. The next post will describe how to create relations between tables, and how to create indexes for a variety of data types. It will also explore the cool feature of using jsonb data types, and the GIN indexing feature to store json data as binary formats.
+
+
+                                                 Thank you for reading.

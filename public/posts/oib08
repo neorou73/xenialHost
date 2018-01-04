@@ -1,0 +1,78 @@
+Originally published on 4/27/11 at 9:31AM EST
+
+Some notes on how to convert multiple files from one file extension to another, using basic PERL script. This is a living document - it will most definitely have edits later.
+
+
+Consider the following perl script:
+
+
+
+#!/usr/bin/perl
+# this is a perl utility that takes a group of files and renames them using a new extension
+# there are a few scenarios to consider:
+#   1. we want to take all files with a given extension and simply remove the extension
+#   2. we want to change the all files with the same extension and
+use warnings;
+use strict;
+
+use File::Find;
+my $mydir = $ARGV[0]; # directory to search
+my $oext = $ARGV[1]; # old extension
+my $next = $ARGV[2]; # new extension
+my $f; # file iteration variable for array of myFiles returned
+my $nf; # converted file iteration
+my @myFiles;
+my $lnOfCharsToRemove; # use this in the rename loop for when an old extension value is passed ($ARGV[1] ne 'none')
+
+# run command to search for wanted files and push into mydir array
+find(\&amp;Wanted, $mydir);
+
+# create a subroutine that takes each file in this directory and rename them with new extension
+sub Wanted {
+  # return all files because no extension is given
+    if ($oext eq "none") {
+        (/.*/) or return;
+          }
+            else
+              {
+                  # return files with given extension only
+                      (/\.$oext$/) or return;
+                        }
+                          push @myFiles, $File::Find::name;
+                          }
+
+                          # run a process for the array of myFiles
+                          foreach $f (@myFiles) {
+                            # make sure we are only dealing with files (-f is for files, -d is for directories)
+                              if (-f $f) {
+                                  # go through each of the above scenarios
+                                      if ($oext eq "none" and $next ne "none")
+                                          {
+                                                # simply add the new extension to each of the found files
+                                                      print "\textensionless file " . $f . " found, will add a \'." . $next . "\' extension\n";
+                                                            rename($f, ($f . "." . $next));
+                                                                } 
+                                                                    elsif ($oext ne "none" and $next eq "none")
+                                                                        {
+                                                                              # use substr($string, 0, $lengthOfCharToRemoveNegativeValue) to remove the old extension - remember to count the "."
+                                                                                    $lnOfCharsToRemove = length($oext) + 1; # adding one for the extra "."
+                                                                                          print "\tfile " . $f . " found, will remove the old \'." . $oext . "\' extension\n";
+                                                                                                $nf = substr($f, 0, -($lnOfCharsToRemove)); # strip the old extension
+                                                                                                      rename($f, $nf); # rename the file
+                                                                                                          }
+                                                                                                              elsif ($oext ne "none" and $next ne "none")
+                                                                                                                  {
+                                                                                                                        # simply strip the old extension away
+                                                                                                                              $lnOfCharsToRemove = length($oext) + 1; # adding one for the extra "."
+                                                                                                                                    $nf = substr($f, 0, -($lnOfCharsToRemove)); # strip the old extension from each file
+                                                                                                                                          print "\tfile " . $f . " found, will remove the old \'." . $oext . "\' extension, and ";
+                                                                                                                                                rename($f, ($nf . "." . $next)); # add the new extension to the extensionless file
+                                                                                                                                                      print "add a new \'" . $next . "\' extension.";
+                                                                                                                                                          }
+                                                                                                                                                            }
+                                                                                                                                                            }
+
+
+
+                                                                                                                                                            I have been needing this utility now for I can not remember how long.
+                                                                                                                                                            The next phase in this development involves using multiple directories.

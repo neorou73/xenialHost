@@ -1,0 +1,12 @@
+originally published on 4/27/11 at 9:55PM EST
+
+Really, the first philosophy in knowing when to use either one languages seems to boil down to this:
+
+
+    Perl allows a lot of flexibility in terms of how you want to tell your machine to do a particular task. TMTOWTDI (There Is More Than One Way To Do It).
+        Python on the other hand, recommends a specific way to do a particular task.TSOBOWTDI (There Should Only Be One Way To Do It).
+
+        Either one though, has a whole slew of extensions and components that you can use to accomplish pretty much anything.
+
+
+        Advanced (and not so advanced) experts probably have their own takes on the matter, but this approach has been rewarding for this note taker thus far.

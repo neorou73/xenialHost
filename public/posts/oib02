@@ -1,0 +1,300 @@
+Originally published on 8/6/4 at 1:25PM EST
+
+I recently spent some time trying to get accustomed to using Sphinx as a documentation tool. After many hits and misses, I think I finally figured out how to use it. I have been relatively poor at writing up the things that I have learned over the years, so I am making an effort to do that here.
+
+
+There are many Sphinx tutorials, but not very many good introductory tutorials to get programmers up and running. The one single tutorial that helped me the most was this video by Mark Dehus: https://www.youtube.com/watch?v=LQ6pFgQXQ0Q
+
+
+Let me first say, "Thank you, Mark!"
+
+
+Although video is a great media, I find that it is often more useful to pair it with actual written documentation. It has been a while since Mark made his video, so Sphinx has changed somewhat. Most of his steps remain the same though. Without further ado, let's get to it.
+
+
+I am using a CentOS 6.5 VM. My Python version is 2.7.6. and I have a project directory myproj, located in /home/me/projects/myproj - where me is my user account. Newbies to Linux and Python, this means I created a directory projects and inside it, another directory myproj.
+
+
+First and foremost, how should you structure your project directory? Really, the answer should be: "However you like..." see this post by S. Lott on StackOverflow: http://stackoverflow.com/a/193181. It would be useful, however to read up on it more. I found this more useful than the old Python docs: http://docs.python-guide.org/en/latest/writing/structure/
+
+
+For this tutorial, my project is simple:
+
+
+myproj
+
+  |
+
+    - foo.py
+
+      - faa.py
+
+        - __init__.py
+
+
+        We will create some HTML documentation that is fashioned after the python documentation scheme and theme. Your project documentation can live anywhere, but for the purpose of this tutorial, it will live in the myproj directory. So, you can create a docs directory under myproj, so that your directory structure looks like this:
+
+
+        myproj
+
+             |
+
+                 - docs
+
+                     - foo.py
+
+                         - faa.py
+
+                             - __init__.py
+
+
+                             Make a note of your documentation root directory (/home/me/projects/myproj/docs) and start the process. To get started, run the following in your terminal window:
+
+
+                             [me@me projects]: sphinx-quickstart
+
+
+                             This runs a script that creates the documentation directory structure with all the starter files. Answer all the questions, and choose the default answers with the following non-default settings: the documentation root directory as described above, use autodoc, use make, do not use MS Windows options (this is a tutorial on Linux). Follow Mark Dehus' video example when setting up using sphinx-quickstart: https://www.youtube.com/watch?v=LQ6pFgQXQ0Q
+
+
+                             Your directory should now have the following structure:
+
+
+                             myproj
+
+                               |
+
+                                 - docs
+
+                                      |
+
+                                           - conf.py
+
+                                                - _build
+
+                                                     - _static
+
+                                                          - _template
+
+                                                               - index.rst
+
+                                                                    - Makefile
+
+                                                                      - foo.py
+
+                                                                        - faa.py
+
+                                                                          - __init__.py
+
+
+                                                                          This is a blank documentation directory. At this point, you will need to tell Sphinx where your project root is and create additional .rst files to create your HTML source files. Change into the docs directory under myproj. To tell Sphinx where your project directory is, open conf.py, and uncomment the following line:
+
+
+                                                                          #sys.path.insert(0, os.path.abspath('.'))
+
+
+                                                                          Instead, you want to include the relative path to your project directory. Following this example, it will be:
+
+
+                                                                          sys.path.insert(0, os.path.abspath('../'))
+
+
+                                                                          Sphinx reads the .rst files and generates HTML based on reStructuredText specifications. You will need to edit index.rst, so that it is specific to your project. Here is an example of the .rst file before it was edited:
+
+
+                                                                          .. myproj documentation master file, created by
+
+                                                                             sphinx-quickstart on Wed Aug  6 11:05:17 2014.
+
+                                                                                You can adapt this file completely to your liking, but it should at least
+
+                                                                                   contain the root `toctree` directive.
+
+
+                                                                                   Welcome to Myproj documentation!
+
+                                                                                   ==================================
+
+
+                                                                                   Myproj is a Project that I wrote in Python!
+
+
+                                                                                   Contents:
+
+
+                                                                                   .. toctree::
+
+                                                                                      :maxdepth: 2
+
+
+
+                                                                                      Indices and tables
+
+                                                                                      ==================
+
+
+                                                                                      * :ref:`genindex`
+
+                                                                                      * :ref:`modindex`
+
+                                                                                      * :ref:`search`
+
+
+                                                                                      Here is my example content:
+
+
+                                                                                      .. myproj documentation master file, created by
+
+                                                                                         sphinx-quickstart on Wed Aug  6 11:05:17 2014.
+
+                                                                                            You can adapt this file completely to your liking, but it should at least
+
+                                                                                               contain the root `toctree` directive.
+
+
+                                                                                               Welcome to Myproj documentation!
+
+                                                                                               ==================================
+
+
+                                                                                               Myproj is a Project that I wrote in Python!
+
+
+                                                                                               Contents:
+
+
+                                                                                               .. toctree::
+
+                                                                                                  :maxdepth: 2
+
+
+                                                                                                     introduction
+
+                                                                                                        myprojmods
+
+
+                                                                                                        Indices and tables
+
+                                                                                                        ==================
+
+
+                                                                                                        * :ref:`genindex`
+
+                                                                                                        * :ref:`modindex`
+
+                                                                                                        * :ref:`search`
+
+
+                                                                                                        Notice I added two lines on there, introduction and myprojmods. These refer to additional .rst files that I will create, containing documentation written in reStructuredText. To read more about reStructuredText, go here: http://sphinx-doc.org/rest.html#rst-primer
+
+
+                                                                                                        Continuing, create the new files: introduction.rst and myprojmods.rst. I intended to use introduction.rst to expand upon the purpose of the project, and the other file, myprojmods.rst, as a way to list the modules I have in my project directory structure. These two files should be in the same directory as index.rst. Here is what I have for introduction.rst:
+
+
+                                                                                                        Welcome to Myproj documentation!
+
+                                                                                                        ==================================
+
+
+                                                                                                        Myproj is a Project that I wrote in Python!
+
+
+                                                                                                        The second .rst file is simply a file that includes yet another 2 .rst files that I have to create, that will automatically generate document based on what I had entered in properly indented docstrings on my Python modules foo.py and faa.py. So, I will have to create  Here is what I have for myprojmods.rst:
+
+
+                                                                                                        Myproj Modules
+
+                                                                                                        =====================
+
+
+                                                                                                        Myproj has two Modules right now. 
+
+
+                                                                                                        Contents:
+
+
+                                                                                                        .. toctree::
+
+                                                                                                           :maxdepth: 2
+
+
+                                                                                                              foo
+
+                                                                                                                 faa
+
+
+                                                                                                                 Indices and tables
+
+                                                                                                                 ==================
+
+
+                                                                                                                 * :ref:`genindex`
+
+                                                                                                                 * :ref:`modindex`
+
+                                                                                                                 * :ref:`search`
+
+
+                                                                                                                 Okay, so now the file above will look for foo.rst and faa.rst, which in turn will read my two python modules foo.py and faa.py. Following is an example of foo.rst:
+
+
+                                                                                                                 Myproj Foo Module
+
+                                                                                                                 =======================
+
+
+                                                                                                                 .. automodule:: foo
+
+                                                                                                                    :members:
+
+
+                                                                                                                    .. autoclass:: foo.foo
+
+                                                                                                                       :members:
+
+                                                                                                                          :special-members:
+
+                                                                                                                             :private-members:
+
+
+                                                                                                                             I added 2 main directives, where the automodule should read the foo.py module recursively. At the time of this writing though, I found that Sphinx does not go down into the class structure and document everything. I needed to tell Sphinx to go into the class structure, and read all private and special methods, i.e. those that are defined as __something and those that are defined as __something__, respectively. I would then duplicate my efforts for faa.py on faa.rst, substituting use of Foo with Faa and foo with faa:
+
+
+                                                                                                                             Myproj Faa Module
+
+                                                                                                                             =======================
+
+
+                                                                                                                             .. automodule:: faa
+
+                                                                                                                                :members:
+
+
+                                                                                                                                .. autoclass:: faa.faa
+
+                                                                                                                                   :members:
+
+                                                                                                                                      :special-members:
+
+                                                                                                                                         :private-members:
+
+
+                                                                                                                                         Okay. Now that I have all my .rst files and configuration set, I will need to run the command that will actually read the project directories and generate the necessary documentation files. That command is:
+
+
+                                                                                                                                         [me@me docs]: make html
+
+
+                                                                                                                                         The script goes and does its thing, printing out all that it does and errors if any. If no errors are produced, then a properly set up Sphinx and project directory should produce the entire HTML documentation directory in /home/me/projects/myproj/docs/_build/html.
+
+
+                                                                                                                                         If errors are produced, pay attention to the errors that are produced. if the errors have to do with Sphinx not being able to find the file, be sure that the relative inclusion of the project directory is properly reflected in the inclusion directive in conf.py:
+
+
+                                                                                                                                         sys.path.insert(0, os.path.abspath('../'))
+
+
+                                                                                                                                         I have had errors where files included in the list of .rst files are not necessarily reflective of what .rst files exist in the root documentation directory. Also, use the Sphinx reStructuredText directives for each .rst file properly. For more information on how to automate reading of docstrings knowing that module specification and locations are correctly set, read this: http://sphinx-doc.org/ext/autodoc.html#module-sphinx.ext.autodoc
+
+
+                                                                                                                                         Happy Sphinx-ing!!!

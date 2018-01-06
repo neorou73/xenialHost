@@ -3,11 +3,27 @@
   <head>
     <title>The Egg</title>
     <script href='js/jquery.min.js'></script>
-    <script>alert('test')</script>
+    <script>
+      $.ajax({
+        async: false,
+        url: '/posts/oib06',
+        dataType: 'text',
+        success: function(data) {
+          $('.text').append(data);
+      });
+    </script>
+    <link rel="stylesheet" href="css/main.css"/>
   <head>
   <body>
     <h1>The Egg</h1>
     <div><p>Content</p></div>
-    
+    <div class="text">
+      Lorem Upsum <br/>
+    </div>
+    <div>
+      <object data="posts/oib07" type="text/plain" width="500" style="height: 300px">
+        <a href="posts/oib07">No Support?</a>
+      </object>
+    </div>
   </body>
 </html>
